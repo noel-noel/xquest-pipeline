@@ -1,28 +1,66 @@
-
 #-------------------------------------- CONFIGURATION------------------------------------------
-proj_name="test"         							# e.g.: "ph-analysis-sample-1"
-
-raw = "Documents/RAW"								# path to raw-files RELATIVE to the /home/user/ location
-													# 
+proj_name = "test"         							# e.g.: "ph-analysis-sample-1"
+xquest_def_path = "/home/noel/xquest.def"			# run create_configs.sh to get these .def-files
+xmm_def_path = "/home/noel/xmm.def"					# and modify them according to the experimental design
+xprophet_def_path = "/home/noel/xproph.def"
+raw_path = "/home/noel/Documents/RAW"				# path to raw-files
+													# make sure u store them somewhere in 
+													# /home/username/.../ NOT in e.g. /usr/share/ !   
 													# WARNING: ALL FILES IN THIS DIR WILL BE USED FOR ANALYSIS
-
-fasta="/home/noel/Documents/8-proteins.fasta"		# path to DB of proteins analyzed in FASTA-format
 #-----------------------------------------------------------------------------------------------
 
 work_dir = os.environ["HOME"] + "/xquest/analysis/" + proj_name
+raw = raw_path.split(os.environ["HOME"])[1]
+if raw[-1] == "/":
+	raw = raw[:-1]
 samples = os.listdir(os.environ["HOME"] + "/" + raw)
 mz_samples = [filename.replace(".raw", ".mzXML") for filename in samples]
 samples_base = [filename.replace(".raw", "") for filename in samples]
 
-xq_postfixes_per_sample_main = ["matched", "matcheddir", "matched.txt", "matched.txt_isopairs.xls", "matched_isotopepairs.txt"]
+xq_postfixes_per_sample_main = ["matched", "matcheddir", "matched.txt", 
+								"matched.txt_isopairs.xls", "matched_isotopepairs.txt"]
 xq_files_per_sample_main_dir = ["inclusionlist.xls", "runxq0.sh"]
-xq_files_per_sample_nested = ["xquest.def", "xquest.xml", "database.fasta", "db/database.fasta", "db/database.fasta_ion.db", "db/database.fasta_index.stat",
-							  "db/database.fasta_peps.db", "db/database.fasta_info.db", "db/database.fasta_peptides.txt"]
+xq_files_per_sample_nested = ["xquest.def", "xquest.xml", ""+ fasta_name + "", "db/"+ fasta_name + "", 
+							  "db/"+ fasta_name + "_ion.db", "db/"+ fasta_name + "_index.stat",
+							  "db/"+ fasta_name + "_peps.db", "db/"+ fasta_name + "_info.db", 
+							  "db/"+ fasta_name + "_peptides.txt"]
 xq_postfixes_per_sample_nested= ["matched.stat", "matched.spec.xml", "matched.progress", "matched.stat.done"]
+fasta_path = "" 				# written in copy_configs 
+fasta_name = "" 				# written in copy_configs 
+
+rule copy_configs:
+	input:
+		xq=xquest_def_path,
+		xmm=xprophet_def_path,
+		xp=xmm_def_path
+	params:
+		work_dir=work_dir,
+		result_dir=work_dir + "/results/" + proj_name 
+	output:
+		work_dir + "/xquest.def",
+		work_dir + "/xmm.def",
+		work_dir + "/results/" + proj_name + "/xproph.def"
+	run:
+		shell(
+		"""
+		mkdir -p $HOME/xquest/{{results,analysis/{params.directory}/db}}
+		sed -i "s#/path/to/decoy-database/database.fasta#$HOME/xquest/analysis/{params.directory}/db/database_decoy.fasta#g" {input.xq}
+		cp {input.xq} {params.work_dir}
+		cp {input.xmm} {params.work_dir}
+		cp {input.xp} {params.result_dir}
+		"""
+		)
+		with open ('{input.xq}', 'rt') as xq_file:
+		    for line in xq_file: 
+		        if "database" in line and "decoy" not in line:
+		        	fasta_path = line.replace("database", "").strip()
+		        	fasta_name = fasta_path.split("/")[-1]
+		        	break
+
 
 rule convert_RAW_to_MzXML:
 	input:
-		os.environ["HOME"] + raw + "{sample}.raw"
+		os.environ["HOME"] + raw + "/{sample}.raw"
 	params:
 		raw = raw,
 		work_dir = work_dir,
@@ -52,67 +90,32 @@ rule manage_mzxml:
 
 
 rule manage_db:
+	input:
+		work_dir + "/xquest.def",
+		work_dir + "/xmm.def",
+		work_dir + "/results/" + proj_name + "/xproph.def"
 	params: 
 		directory=proj_name,
-		deffiles=os.environ["HOME"] + "/xquest/deffiles",
-		fasta=fasta
+		fasta_path=fasta_path
 	output:
-		work_dir + "/db/database.fasta",
+		symlink_fasta = work_dir + "/db/"+ fasta_name,
 		work_dir + "/db/database_decoy.fasta"
 	shell:
 		"""
 		mkdir -p $HOME/xquest/{{results,analysis/{params.directory}/db}}
 
 		cd $HOME/xquest/analysis/{params.directory}/
-		ln -sf {params.fasta} db/database.fasta
-		xdecoy.pl -db db/database.fasta -out db/database_decoy.fasta
+		ln -sf {params.fasta_path} {output.symlink_fasta}
+		xdecoy.pl -db {output.symlink_fasta} -out db/database_decoy.fasta
 		"""
-
-
-rule manage_xquest_def:
-	input:
-		work_dir + "/db/database.fasta",
-		work_dir + "/db/database_decoy.fasta"
-	params: 
-		deffiles=os.environ["HOME"] + "/xquest/deffiles",
-		directory=proj_name,
-		work_dir=work_dir
-	output:
-		work_dir + "/xquest.def"
-	shell:
-		"""
-		mkdir -p $HOME/xquest/{{results,analysis/{params.directory}/db}}
-
-		cp {params.deffiles}/xquest.def $HOME/xquest/analysis/{params.directory}
-		sed -i "s#/path/to/database/database.fasta#$HOME/xquest/analysis/{params.directory}/db/database.fasta#g" {output}
-		sed -i "s#/path/to/decoy-database/database.fasta#$HOME/xquest/analysis/{params.directory}/db/database_decoy.fasta#g" {output}
-		cd {params.work_dir}
-		gedit xquest.def
-		"""
-
-
-rule manage_xmm_def:
-	params: 
-		deffiles=os.environ["HOME"] + "/xquest/deffiles",
-		directory=proj_name,
-		work_dir=work_dir
-	output: 
-		work_dir + "/xmm.def"
-	shell:
-		"""
-		mkdir -p $HOME/xquest/{{results,analysis/{params.directory}/db}}
 		
-		cp {params.deffiles}/xmm.def $HOME/xquest/analysis/{params.directory}
-		cd {params.work_dir}
-		gedit xmm.def
-		"""
 
 rule xquest_configure_search:
 	input:
 		work_dir + "/xmm.def",
 		work_dir + "/xquest.def",
 		work_dir + "/files",
-		work_dir + "/db/database.fasta",
+		work_dir + "/db/"+ fasta_name,
 		expand(work_dir + "/mzxml/{filename}", filename=mz_samples)
 	params: 
 		work_dir
@@ -219,7 +222,6 @@ rule xprophet_configure:
 		cd {params.result_dir}
 		printf "Configuring xProphet analysis...\n"
 		xprophet.pl
-		gedit xproph.def
 		printf "Configuring xProphet analysis... Done.\n\n"
 		"""
 
@@ -246,12 +248,8 @@ rule all:
 		result_dir=work_dir + "/results/" + proj_name
 	shell:
 		"""
-		printf "Copying results to the web server...\nThe script will ask your password to give the correct permissions to Apache 2.\n"
-		ln -sf {params.result_dir} $HOME/xquest/results/
-		sudo chmod -R 777 $HOME/xquest/results/
+		printf "Copying results to the web server...\n"
+		ln -sf {params.result_dir} /usr/local/share/xquest/results/
 		printf "Done.\n\n"
-
-		printf "Display the result manager.\n"
-		firefox localhost/cgi-bin/xquest/resultsmanager.cgi
 		"""
 
