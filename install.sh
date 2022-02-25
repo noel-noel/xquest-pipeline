@@ -2,7 +2,8 @@
 
 # Downloading xQuest/xProphet
 printf "Downloading xQuest/xProphet... "
-mkdir /usr/local/share/xquest
+sudo mkdir /usr/local/share/xquest
+chmod -R 777 /usr/local/share/xquest
 cd /usr/local/share/xquest
 wget https://gitlab.ethz.ch/leitner_lab/xquest_xprophet/-/raw/master/V2.1.5.tar
 printf "Done.\n\n"
@@ -47,6 +48,7 @@ esac
 # Configuring Apache 2
 sudo service apache2 restart
 printf "Configuring the Apache 2 web server...\nThe script will ask you your password.\n"
+sudo mkdir /usr/local/share/xquest/results
 sudo chmod -R 777 /usr/local/share/xquest/results
 # apache2.conf
 sudo cp /etc/apache2/apache2.conf /etc/apache2/apache2.conf.bak
@@ -70,7 +72,6 @@ sudo a2enmod cgi
 sudo mkdir /var/www/cgi-bin/
 sudo ln -s /usr/local/share/xquest/V2.1.5/xquest/cgi/ /var/www/cgi-bin/xquest
 sudo ln -s /usr/local/share/xquest/results/ /var/www/results
-sudo chmod -R 777 /usr/local/share/xquest/results/
 # Configuring xQuest for Apache 2
 sed -i "s/xquest-desktop/$(hostname -s)/g" /usr/local/share/xquest/V2.1.5/xquest/modules/Environment.pm
 sed -i "s/xquestvm/xquest-ubuntu/g" /usr/local/share/xquest/V2.1.5/xquest/modules/Environment.pm
@@ -79,8 +80,8 @@ sed -i "s#/home/xquest/results#/usr/local/share/xquest/results#g" /usr/local/sha
 # Copying deffiles
 mkdir /usr/local/share/xquest/deffiles
 cp /usr/local/share/xquest/V2.1.5/xquest/deffiles/xQuest/xquest.def /usr/local/share/xquest/deffiles/xquest.def
-cp /usr/local/share/xquest/V2.1.5/xquest/deffiles/xmm/xmm.def /usr/local/share/xquest/V2.1.5/xquest/deffiles/xmm.def
-cp /usr/local/share/xquest/V2.1.5/xquest/deffiles/mass_table.def /usr/local/share/xquest/V2.1.5/xquest/deffiles/mass_table.def
+cp /usr/local/share/xquest/V2.1.5/xquest/deffiles/xmm/xmm.def /usr/local/share/xquest/deffiles/xmm.def
+cp /usr/local/share/xquest/V2.1.5/xquest/deffiles/mass_table.def /usr/local/share/xquest/deffiles/mass_table.def
 # Changing wtf these bastards made up god knows what for
 sed -i "s#\\\/cluster\\\/apps\\\/imsb#\\/usr\\/local\\/share#g" /usr/local/share/xquest/V2.1.5/xquest/modules/Environment.pm
 
