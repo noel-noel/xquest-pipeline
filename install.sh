@@ -94,4 +94,4 @@ sudo apt-get install docker.io
 sudo apt-get install wine
 sudo apt-get install cpanminus
 sudo cpanm Bio::Perl -f
-
+sudo apt-get install snakemake
