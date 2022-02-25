@@ -4,7 +4,7 @@
 printf "Downloading xQuest/xProphet... "
 mkdir /usr/local/share/xquest
 cd /usr/local/share/xquest
-wget https://gitlab.ethz.ch/leitner_lab/xquest_xprophet/-/blob/master/V2.1.5.tar
+wget https://gitlab.ethz.ch/leitner_lab/xquest_xprophet/-/raw/master/V2.1.5.tar
 printf "Done.\n\n"
 
 # Extracting the archive
