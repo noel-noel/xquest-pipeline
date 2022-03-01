@@ -54,7 +54,8 @@ rule copy_configs:
 		xp=xmm_def_path
 	params:
 		work_dir=work_dir,
-		result_dir=work_dir + "/results/" + proj_name 
+		result_dir=work_dir + "/results/" + proj_name,
+		directory=proj_name
 	output:
 		work_dir + "/xquest.def",
 		work_dir + "/xmm.def",
@@ -89,7 +90,7 @@ rule convert_RAW_to_MzXML:
 
 rule manage_mzxml:
 	input:
-		expand(work_dir + "/mzxml/{sample}", sample=mz_samples)
+		expand(work_dir + "/mzxml/{sample}.mzXML", sample=samples_base)
 	params:
 		work_dir = work_dir
 	output:
