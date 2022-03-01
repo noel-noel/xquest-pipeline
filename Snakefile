@@ -25,8 +25,27 @@ xq_files_per_sample_nested = ["xquest.def", "xquest.xml", ""+ fasta_name + "", "
 							  "db/"+ fasta_name + "_peps.db", "db/"+ fasta_name + "_info.db", 
 							  "db/"+ fasta_name + "_peptides.txt"]
 xq_postfixes_per_sample_nested= ["matched.stat", "matched.spec.xml", "matched.progress", "matched.stat.done"]
-fasta_path = "" 				# written in copy_configs 
-fasta_name = "" 				# written in copy_configs 
+
+with open (xquest_def_path, 'rt') as xq_file:
+    for line in xq_file: 
+        if "database" in line and "decoy" not in line:
+        	fasta_path = line.replace("database", "").strip()
+        	fasta_name = fasta_path.split("/")[-1]
+        	break
+
+shell("""
+	case ":$PATH:" in
+	  *:/usr/local/share/xquest/V2.1.5/xquest/bin:*) printf "PATH correctly set.\n\n"
+        ;;
+	  *)  printf "Setting PATH... "
+	      cp $HOME/.bashrc $HOME/.bashrc.bak
+	      echo "export PATH=$PATH:/usr/local/share/xquest/V2.1.5/xquest/bin" >> $HOME/.bashrc
+	      source $HOME/.bashrc
+	      printf "Done.\n\n"
+	    ;;
+	esac
+	"""
+	)
 
 rule copy_configs:
 	input:
@@ -40,8 +59,7 @@ rule copy_configs:
 		work_dir + "/xquest.def",
 		work_dir + "/xmm.def",
 		work_dir + "/results/" + proj_name + "/xproph.def"
-	run:
-		shell(
+	shell:
 		"""
 		mkdir -p $HOME/xquest/{{results,analysis/{params.directory}/db}}
 		sed -i "s#/path/to/decoy-database/database.fasta#$HOME/xquest/analysis/{params.directory}/db/database_decoy.fasta#g" {input.xq}
@@ -49,13 +67,6 @@ rule copy_configs:
 		cp {input.xmm} {params.work_dir}
 		cp {input.xp} {params.result_dir}
 		"""
-		)
-		with open ('{input.xq}', 'rt') as xq_file:
-		    for line in xq_file: 
-		        if "database" in line and "decoy" not in line:
-		        	fasta_path = line.replace("database", "").strip()
-		        	fasta_name = fasta_path.split("/")[-1]
-		        	break
 
 
 rule convert_RAW_to_MzXML:
