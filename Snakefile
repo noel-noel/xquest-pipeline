@@ -207,7 +207,7 @@ rule merge_search_results:
 
 rule annotate_results:
 	input: 
-		work_dir + "/merged_xquest.xml"
+		work_dir + "/results/" + proj_name + "/merged_xquest.xml"
 	params:
 		result_dir=work_dir + "/results/" + proj_name
 	output: 
