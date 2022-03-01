@@ -220,23 +220,6 @@ rule annotate_results:
 		printf "Annotating results... Done.\n\n"
 		"""
 
-
-rule xprophet_configure:
-	input:
-		work_dir + "/results/" + proj_name + "/merged_xquest.xml"
-	params:
-		result_dir=work_dir + "/results/" + proj_name
-	output:
-		work_dir + "/results/" + proj_name + "/xproph.def"
-	shell:
-		"""
-		cd {params.result_dir}
-		printf "Configuring xProphet analysis...\n"
-		xprophet.pl
-		printf "Configuring xProphet analysis... Done.\n\n"
-		"""
-
-
 rule xprophet_run:
 	input:
 		work_dir + "/results/" + proj_name + "/xproph.def"
