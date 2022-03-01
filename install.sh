@@ -3,7 +3,7 @@
 # Downloading xQuest/xProphet
 printf "Downloading xQuest/xProphet... "
 sudo mkdir /usr/local/share/xquest
-chmod -R 777 /usr/local/share/xquest
+sudo chmod -R 777 /usr/local/share/xquest
 mkdir /usr/local/share/xquest/deffiles
 cp Snakefile /usr/local/share/xquest/deffiles/
 cp create_configs.sh /usr/local/share/xquest/deffiles/
