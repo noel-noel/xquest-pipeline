@@ -222,7 +222,8 @@ rule annotate_results:
 
 rule xprophet_run:
 	input:
-		work_dir + "/results/" + proj_name + "/xproph.def"
+		work_dir + "/results/" + proj_name + "/xproph.def",
+		work_dir + "/results/" + proj_name + "/annotated_xquest.xml"
 	params:
 		result_dir=work_dir + "/results/" + proj_name
 	output:
