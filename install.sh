@@ -6,6 +6,7 @@ sudo mkdir /usr/local/share/xquest
 chmod -R 777 /usr/local/share/xquest
 mkdir /usr/local/share/xquest/deffiles
 cp Snakefile /usr/local/share/xquest/deffiles/
+cp create_configs.sh /usr/local/share/xquest/deffiles/
 cd /usr/local/share/xquest
 wget https://gitlab.ethz.ch/leitner_lab/xquest_xprophet/-/raw/master/V2.1.5.tar
 printf "Done.\n\n"
