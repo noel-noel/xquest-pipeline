@@ -128,7 +128,7 @@ rule xquest_configure_search:
 		work_dir + "/xquest.def",
 		work_dir + "/files",
 		work_dir + "/db/"+ fasta_name,
-		expand(work_dir + "/mzxml/{filename}", filename=mz_samples)
+		expand(work_dir + "/mzxml/{filename}.mzXML", filename=samples_base)
 	params: 
 		work_dir
 	output:
