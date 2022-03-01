@@ -1,12 +1,12 @@
 #-------------------------------------- CONFIGURATION------------------------------------------
-proj_name = "test"         							# e.g.: "ph-analysis-sample-1"
+proj_name = "test"         					# e.g.: "ph-analysis-sample-1"
 xquest_def_path = "/home/noel/xquest.def"			# run create_configs.sh to get these .def-files
-xmm_def_path = "/home/noel/xmm.def"					# and modify them according to the experimental design
+xmm_def_path = "/home/noel/xmm.def"				# and modify them according to the experimental design
 xprophet_def_path = "/home/noel/xproph.def"
 raw_path = "/home/noel/Documents/RAW"				# path to raw-files
-													# make sure u store them somewhere in 
-													# /home/username/.../ NOT in e.g. /usr/share/ !   
-													# WARNING: ALL FILES IN THIS DIR WILL BE USED FOR ANALYSIS
+								# make sure u store them somewhere in 
+								# /home/username/.../ NOT in e.g. /usr/share/ !   
+								# WARNING: ALL FILES IN THIS DIR WILL BE USED FOR ANALYSIS
 #-----------------------------------------------------------------------------------------------
 
 work_dir = os.environ["HOME"] + "/xquest/analysis/" + proj_name
@@ -17,6 +17,13 @@ samples = os.listdir(os.environ["HOME"] + "/" + raw)
 mz_samples = [filename.replace(".raw", ".mzXML") for filename in samples]
 samples_base = [filename.replace(".raw", "") for filename in samples]
 
+with open (xquest_def_path, 'rt') as xq_file:
+    for line in xq_file: 
+        if "database" in line and "decoy" not in line:
+        	fasta_path = line.replace("database", "").strip()
+        	fasta_name = fasta_path.split("/")[-1]
+        	break
+
 xq_postfixes_per_sample_main = ["matched", "matcheddir", "matched.txt", 
 								"matched.txt_isopairs.xls", "matched_isotopepairs.txt"]
 xq_files_per_sample_main_dir = ["inclusionlist.xls", "runxq0.sh"]
@@ -25,13 +32,6 @@ xq_files_per_sample_nested = ["xquest.def", "xquest.xml", ""+ fasta_name + "", "
 							  "db/"+ fasta_name + "_peps.db", "db/"+ fasta_name + "_info.db", 
 							  "db/"+ fasta_name + "_peptides.txt"]
 xq_postfixes_per_sample_nested= ["matched.stat", "matched.spec.xml", "matched.progress", "matched.stat.done"]
-
-with open (xquest_def_path, 'rt') as xq_file:
-    for line in xq_file: 
-        if "database" in line and "decoy" not in line:
-        	fasta_path = line.replace("database", "").strip()
-        	fasta_name = fasta_path.split("/")[-1]
-        	break
 
 shell("""
 	case ":$PATH:" in
@@ -109,8 +109,8 @@ rule manage_db:
 		directory=proj_name,
 		fasta_path=fasta_path
 	output:
-		symlink_fasta = work_dir + "/db/"+ fasta_name,
-		work_dir + "/db/database_decoy.fasta"
+		work_dir + "/db/database_decoy.fasta",
+		symlink_fasta = work_dir + "/db/"+ fasta_name
 	shell:
 		"""
 		mkdir -p $HOME/xquest/{{results,analysis/{params.directory}/db}}
