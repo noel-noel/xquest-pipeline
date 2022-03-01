@@ -83,7 +83,7 @@ rule convert_RAW_to_MzXML:
 		"""
 		mkdir -p {params.work_dir}/mzxml
 		sudo docker run -v $HOME:/hm chambm/pwiz-skyline-i-agree-to-the-vendor-licenses wine \
-					msconvert /hm/{params.raw}/{sample}.raw --mzXML --32 -o /hm/xquest/analysis/{params.proj_name}/mzxml/
+					msconvert /hm/{params.raw}/{wildcards.sample}.raw --mzXML --32 -o /hm/xquest/analysis/{params.proj_name}/mzxml/
 		sudo chown $USER {output}
 		"""
 
