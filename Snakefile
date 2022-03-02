@@ -199,7 +199,7 @@ rule merge_search_results:
 			"""
 			cd {params.work_dir}
 			printf "Merging result files...\n"
-			mergexml.pl -list resultdirectories_fullpath -resdir {params.work_dir}/results/{params.dir}
+			mergexml.pl -list resultdirectories_fullpath -resdir results/{params.dir}
 			printf "Merging result files... Done.\n\n"
 			"""
 			)
