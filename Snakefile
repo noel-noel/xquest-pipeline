@@ -14,6 +14,7 @@ raw = raw_path.split(os.environ["HOME"])[1]
 if raw[-1] == "/":
 	raw = raw[:-1]
 samples = os.listdir(os.environ["HOME"] + "/" + raw)
+samples.sort()
 mz_samples = [filename.replace(".raw", ".mzXML") for filename in samples]
 samples_base = [filename.replace(".raw", "") for filename in samples]
 
