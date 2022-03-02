@@ -25,7 +25,6 @@ with open (xquest_def_path, 'rt') as xq_file:
         	break
 
 xq_postfixes_per_sample_main = ["matched.txt", "matched.txt_isopairs.xls", "matched_isotopepairs.txt"]
-xq_files_per_sample_main_dir = ["inclusionlist.xls", "runxq0.sh"]
 xq_files_per_sample_nested = ["xquest.def", "xquest.xml", ""+ fasta_name + "", "db/"+ fasta_name + "", 
 							  "db/"+ fasta_name + "_ion.db", "db/"+ fasta_name + "_index.stat",
 							  "db/"+ fasta_name + "_peps.db", "db/"+ fasta_name + "_info.db", 
@@ -160,7 +159,8 @@ rule xquest_run_search:
 		work_dir
 	output:
 		expand(work_dir + "/{filename}/{filename}_{postfix}", filename=samples_base, postfix=xq_postfixes_per_sample_main),
-		expand(work_dir + "/{filename}/{file}", file=xq_files_per_sample_main_dir, filename=samples_base),
+		expand(work_dir + "/{filename}/inclusionlist.xls", filename=samples_base),
+		expand(work_dir + "/{filename}", filename=[samples_base[i] + "/runxq" + str(i) + ".sh" for i in range(len(samples_base))]),
 		expand(work_dir + "/{filename}/{filename}_matched/{filename}_{postfix}", filename=samples_base, postfix=xq_postfixes_per_sample_nested),
 		expand(work_dir + "/{filename}/{filename}_matched/{file}", filename=samples_base, file=xq_files_per_sample_nested),
 		work_dir + "/resultdirectories_fullpath",
@@ -180,7 +180,8 @@ rule merge_search_results:
 		work_dir + "/xmm.def",
 		work_dir + "/xquest.def",
 		expand(work_dir + "/{filename}/{filename}_{postfix}", filename=samples_base, postfix=xq_postfixes_per_sample_main),
-		expand(work_dir + "/{filename}/{file}", file=xq_files_per_sample_main_dir, filename=samples_base),
+		expand(work_dir + "/{filename}/inclusionlist.xls", filename=samples_base),
+		expand(work_dir + "/{filename}", filename=[samples_base[i] + "/runxq" + str(i) + ".sh" for i in range(len(samples_base))]),
 		expand(work_dir + "/{filename}/{filename}_matched/{filename}_{postfix}", filename=samples_base, postfix=xq_postfixes_per_sample_nested),
 		expand(work_dir + "/{filename}/{filename}_matched/{file}", filename=samples_base, file=xq_files_per_sample_nested),
 		work_dir + "/resultdirectories_fullpath",
