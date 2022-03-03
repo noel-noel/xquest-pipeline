@@ -247,6 +247,7 @@ rule all:
 		"""
 		printf "Copying results to the web server...\n"
 		ln -sf {params.result_dir} /usr/local/share/xquest/results/
+		chmod 777 {params.result_dir}
 		printf "Done.\n\n"
 		"""
 
