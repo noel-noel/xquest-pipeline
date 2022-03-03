@@ -1,9 +1,9 @@
 #-------------------------------------- CONFIGURATION------------------------------------------
 proj_name = "test"         					# e.g.: "ph-analysis-sample-1"
-xquest_def_path = "/home/noel/xquest.def"			# run create_configs.sh to get these .def-files
-xmm_def_path = "/home/noel/xmm.def"				# and modify them according to the experimental design
-xprophet_def_path = "/home/noel/xproph.def"
-raw_path = "/home/noel/Documents/RAW"				# path to raw-files
+xquest_def_path = "/path/to/xquest.def"			# run create_configs.sh to get these .def-files
+xmm_def_path = "/path/to/xmm.def"				# and modify them according to the experimental design
+xprophet_def_path = "/path/to/xproph.def"
+raw_path = "/home/user/path/to/RAW"				# path to raw-files
 								# make sure u store them somewhere in 
 								# /home/username/.../ NOT in e.g. /usr/share/ !   
 								# WARNING: ALL FILES IN THIS DIR WILL BE USED FOR ANALYSIS
