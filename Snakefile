@@ -13,7 +13,10 @@ work_dir = os.environ["HOME"] + "/xquest/analysis/" + proj_name
 raw = raw_path.split(os.environ["HOME"])[1]
 if raw[-1] == "/":
 	raw = raw[:-1]
-samples = os.listdir(os.environ["HOME"] + "/" + raw)
+samples = []
+for file in os.listdir(os.environ["HOME"] + "/" + raw):
+	if file.endswith(".raw") or file.endswith(".RAW"):
+		samples.append(file)
 samples.sort()
 mz_samples = [filename.replace(".raw", ".mzXML") for filename in samples]
 samples_base = [filename.replace(".raw", "") for filename in samples]
