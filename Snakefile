@@ -112,7 +112,7 @@ rule manage_db:
 		directory=proj_name,
 		fasta_path=fasta_path
 	output:
-		work_dir + "/db/database_decoy.fasta",
+		decoy = work_dir + "/db/database_decoy.fasta",
 		symlink_fasta = work_dir + "/db/"+ fasta_name
 	shell:
 		"""
@@ -120,7 +120,7 @@ rule manage_db:
 
 		cd $HOME/xquest/analysis/{params.directory}/
 		ln -sf {params.fasta_path} {output.symlink_fasta}
-		xdecoy.pl -db {output.symlink_fasta} -out db/database_decoy.fasta
+		xdecoy.pl -db {output.symlink_fasta} -out {output.decoy}
 		"""
 		
 
