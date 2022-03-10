@@ -30,7 +30,7 @@ with open (xquest_def_path, 'rt') as xq_file:
 
 xq_postfixes_per_sample_main = ["matched.txt", "matched.txt_isopairs.xls", "matched_isotopepairs.txt"]
 xq_files_per_sample_nested = ["xquest.def", "xquest.xml", ""+ fasta_name + "", "db/"+ fasta_name + "", 
-							  "db/"+ fasta_name + "_ion.db", "db/"+ fasta_name + "_index.stat",
+							  "db/"+ fasta_name + "_index.stat",
 							  "db/"+ fasta_name + "_peps.db", "db/"+ fasta_name + "_info.db", 
 							  "db/"+ fasta_name + "_peptides.txt"]
 xq_postfixes_per_sample_nested= ["matched.stat", "matched.spec.xml", "matched.progress", "matched.stat.done"]
