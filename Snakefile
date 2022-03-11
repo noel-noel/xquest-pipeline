@@ -52,8 +52,8 @@ shell("""
 rule copy_configs:
 	input:
 		xq=xquest_def_path,
-		xmm=xprophet_def_path,
-		xp=xmm_def_path
+		xp=xprophet_def_path,
+		xmm=xmm_def_path
 	params:
 		work_dir=work_dir,
 		result_dir=work_dir + "/results/" + proj_name,
